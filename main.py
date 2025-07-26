@@ -1,8 +1,9 @@
 import discord
 import logging
-import os
+import os 
 from dotenv import load_dotenv
-from discord.ext import commands
+from discord.ext import commands, tasks
+from os import listdir
 
 logging.basicConfig(
     level=logging.INFO,
@@ -19,7 +20,8 @@ load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
 COGS = [
-    "cogs.events"
+    "cogs.events",
+    "cogs.commands"
 ]
 
 intents = discord.Intents.default()
@@ -28,18 +30,20 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix='?', description=description, intents=intents)
 
-@bot.event
-async def on_ready():
-    print(f'Logged in as {bot.user}')
-    for cog in COGS:
-        await bot.load_extension(cog)
-    await bot.tree.sync()
-    
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     if not DISCORD_TOKEN:
         logging.critical("DISCORD_TOKEN not found in environment.")
         exit(1)
     
-    bot.run(DISCORD_TOKEN)
+
+@bot.event
+async def on_ready():
+    print(f'Logged in as {bot.user.name}')
+    for cog in COGS:
+        await bot.load_extension(cog)
+    await bot.tree.sync()
     
     
+    
+bot.run(DISCORD_TOKEN)
