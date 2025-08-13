@@ -18,18 +18,15 @@ There are a number of utility commands being showcased here.'''
 
 load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+GUILD_ID = os.getenv("GUILD_ID")
 
 COGS = [
     "cogs.events",
-    "cogs.commands"
+    "cogs.commands",
+    "cogs.minecraft"
 ]
 
-intents = discord.Intents.default()
-intents.members = True
-intents.message_content = True
-
-bot = commands.Bot(command_prefix='?', description=description, intents=intents)
-
+bot = commands.Bot(command_prefix='!', description=description, intents=discord.Intents.all())
 
 if __name__ == '__main__':
     if not DISCORD_TOKEN:
@@ -39,11 +36,17 @@ if __name__ == '__main__':
 
 @bot.event
 async def on_ready():
-    print(f'Logged in as {bot.user.name}')
+    logging.info(f'Logged in as {bot.user.name}')
     for cog in COGS:
         await bot.load_extension(cog)
-    await bot.tree.sync()
-    
+        
+    try:
+        guild = discord.Object(GUILD_ID)
+        synced = await bot.tree.sync(guild=guild)
+        logging.info(f"{len(synced)} commands loaded!")
+        
+    except Exception as e:
+        logging.critical(f"Error syncing commands: {e}")
     
     
 bot.run(DISCORD_TOKEN)

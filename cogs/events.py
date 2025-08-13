@@ -13,7 +13,7 @@ class Events(commands.Cog):
     async def on_message(self, message):
         if message.author == self.bot.user:
             return
-        if "sylvie" and "hi" in message.content:
+        if "sylvie" in message.content and "hi" in message.content:
             print("Found message to me")
             await message.channel.send(f"HIII HELLOOOOO {message.author}!")
     

@@ -1,8 +1,7 @@
 import discord
-import logging
-import os
 
 from discord.ext import commands
+from discord import app_commands
 
 class Commands(commands.Cog):
     
