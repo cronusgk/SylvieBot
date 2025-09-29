@@ -2,8 +2,7 @@ import discord
 import logging
 import os 
 from dotenv import load_dotenv
-from discord.ext import commands, tasks
-from os import listdir
+from discord.ext import commands
 
 logging.basicConfig(
     level=logging.INFO,
@@ -19,11 +18,12 @@ There are a number of utility commands being showcased here.'''
 load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 GUILD_ID = os.getenv("GUILD_ID")
+DISCORD_ID = os.getenv("DISCORD_ID")
 
 COGS = [
     "cogs.events",
     "cogs.commands",
-    "cogs.minecraft"
+    "cogs.pterodactyl"
 ]
 
 bot = commands.Bot(command_prefix='!', description=description, intents=discord.Intents.all())
@@ -39,14 +39,20 @@ async def on_ready():
     logging.info(f'Logged in as {bot.user.name}')
     for cog in COGS:
         await bot.load_extension(cog)
-        
-    try:
-        guild = discord.Object(GUILD_ID)
-        synced = await bot.tree.sync(guild=guild)
-        logging.info(f"{len(synced)} commands loaded!")
-        
-    except Exception as e:
-        logging.critical(f"Error syncing commands: {e}")
     
+@bot.command(name="sync") 
+async def sync(self):
+    synced = await bot.tree.sync()
+    print(f"Synced {len(synced)} command(s).")
+
+@bot.command()
+@commands.is_owner()
+async def reload(ctx):
+    for cog in COGS:
+        await bot.reload_extension(cog)
+        embed = discord.Embed(title='Reload', description=f'{cog} successfully reloaded', color=0xff00c8)
+        await ctx.send(embed=embed)
+    embed = discord.Embed(title='Reload', description=f'all cogs successfully reloaded', color=0xf000c8)
+    await ctx.send (embed=embed)
     
 bot.run(DISCORD_TOKEN)
