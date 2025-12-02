@@ -13,8 +13,8 @@ headers = {
   'Content-Type': 'application/json'
 }
 
-external_id = "Minecraft"
-url = f"https://{panel}/api/application/servers/external/{external_id}"
+external_id = "Mayview"
+url = f"https://{panel}/api/client/"
 try:
     response = requests.get(
         url, 
@@ -25,13 +25,8 @@ try:
     data = response.json()
 except requests.exceptions.RequestException as e:
     print(f"API Error fetching server info: {e}")
-
-""" i = 0
-for server in server_info:
-    server_name = server["attributes"]["name"]
-    servers[server_name] = server_info[i]
-    i += 1 """
     
+
 
 pretty_json = json.dumps(data, indent=4)
 print(pretty_json)

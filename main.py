@@ -20,6 +20,7 @@ DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 GUILD_ID = os.getenv("GUILD_ID")
 DISCORD_ID = os.getenv("DISCORD_ID")
 
+
 COGS = [
     "cogs.events",
     "cogs.commands",
@@ -33,6 +34,8 @@ if __name__ == '__main__':
         logging.critical("DISCORD_TOKEN not found in environment.")
         exit(1)
     
+
+
 
 @bot.event
 async def on_ready():

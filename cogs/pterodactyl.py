@@ -2,9 +2,9 @@ import discord
 import os
 import asyncio
 
-from discord.ext import commands
+from discord.ext import commands, tasks
 from dotenv import load_dotenv
-from cogs.apis.pterodactylApi import PterodactylAPI
+from cogs.apis.pterodactyl_api import PterodactylAPI
 from discord import app_commands
 
 load_dotenv()
@@ -36,7 +36,7 @@ class Pterodactyl(commands.Cog):
         for server, info in servers.items():
             embed = discord.Embed(
                 title=f"{server}",
-                description=f"The server is currently **{info.get("attributes").get("status")}**.",
+                description=f"The server is currently **{info.get("attributes").get("current_state")}**.",
                 colour=discord.Colour.green()
             )
             embed.set_author(name='cronusgk', url='https://github.com/cronusgk', icon_url='https://tinyurl.com/pterodactylcronus') 
@@ -57,13 +57,19 @@ class Pterodactyl(commands.Cog):
         
         embed = discord.Embed(
             title=f"{server}",
-            description=f"The server is currently **{server_info.get("attributes").get("status")}**.",
+            description=f"The server is currently **{server_info.get("attributes").get("current_state")}**.",
             colour=discord.Colour.green()
         )
         embed.set_author(name='cronusgk', url='https://github.com/cronusgk', icon_url='https://tinyurl.com/pterodactylcronus') 
         
         await ctx.response.send_message(embed=embed)
         
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        owner = message.guild.owner
+        if "The server is currently offline." in message.Embeds.content:
+            print("Server offline")
+            await message.reply(f"{owner.mention} a server is down!")
     
 async def setup(bot: commands.Bot):
     await bot.add_cog(Pterodactyl(bot))

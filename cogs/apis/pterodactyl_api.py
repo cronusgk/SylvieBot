@@ -22,20 +22,20 @@ class PterodactylAPI:
             
             servers = {}
             data = response.json()
+            
             server_info = data.get("data")
-            i = 0
             for server in server_info:
-                server_name = server["attributes"]["name"]
-                servers[server_name] = server_info[i]
-                i += 1
+                server_id = server["attributes"]["uuid"]
+                servers[server["attributes"]["name"]] = self.get_server(server_id)
             
             return servers
         except requests.exceptions.RequestException as e:
             print(f"API Error fetching server info: {e}")
             return None 
         
-    def get_server(self, external_id) -> dict:
-        url = f"https://{self.panel}/api/application/servers/external/{external_id}"
+    def get_server(self, server_id) -> dict:
+
+        url = f"https://{self.panel}/api/client/servers/{server_id}/resources"
         try:
             response = requests.get(
                 url, 
