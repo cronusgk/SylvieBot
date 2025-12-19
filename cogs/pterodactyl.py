@@ -1,3 +1,4 @@
+import pprint
 import discord
 import os
 import asyncio
@@ -9,19 +10,25 @@ from discord import app_commands
 
 load_dotenv()
 panel = os.getenv("PANEL")
-api_key = os.getenv("PTERODACTYL_API")
+client = os.getenv("CLIENT_API")
+admin = os.getenv("ADMIN_API")
 
-headers = {
-  'Authorization': f'Bearer {api_key}',
+client_headers = {
+  'Authorization': f'Bearer {client}',
   'Accept': 'Application/vnd.pterodactyl.v1+json',
   'Content-Type': 'application/json'
+}
+
+admin_headers = {
+  'Authorization': f'Bearer {admin}',
+  'Accept': 'Application/vnd.pterodactyl.v1+json'
 }
 
 class Pterodactyl(commands.Cog):
     
     def __init__(self, bot):
         self.bot = bot
-        self.api = PterodactylAPI(api_key=api_key, headers=headers, panel=panel)
+        self.api = PterodactylAPI(client_headers=client_headers, admin_headers=admin_headers, panel=panel)
     
     @app_commands.command(name="servers", description="Shows all hosted servers")
     async def allServers(self, ctx):
@@ -36,7 +43,7 @@ class Pterodactyl(commands.Cog):
         for server, info in servers.items():
             embed = discord.Embed(
                 title=f"{server}",
-                description=f"The server is currently **{info.get("attributes").get("current_state")}**.",
+                description=f"The server is currently **{info.get("resources").get("current_state")}**.",
                 colour=discord.Colour.green()
             )
             embed.set_author(name='cronusgk', url='https://github.com/cronusgk', icon_url='https://tinyurl.com/pterodactylcronus') 
@@ -49,7 +56,7 @@ class Pterodactyl(commands.Cog):
     @app_commands.command(name="server", description="Shows specified server")
     async def server(self, ctx, server: str):
         
-        server_info = await asyncio.to_thread(self.api.get_server, server)
+        server_info = await asyncio.to_thread(self.api.get_server_details, server)
         
         if server_info is None:
             await ctx.response.send_message("No server found with that name.")
@@ -57,7 +64,7 @@ class Pterodactyl(commands.Cog):
         
         embed = discord.Embed(
             title=f"{server}",
-            description=f"The server is currently **{server_info.get("attributes").get("current_state")}**.",
+            description=f"The server is currently **{server_info.get("resources").get("current_state")}**.",
             colour=discord.Colour.green()
         )
         embed.set_author(name='cronusgk', url='https://github.com/cronusgk', icon_url='https://tinyurl.com/pterodactylcronus') 
@@ -67,9 +74,11 @@ class Pterodactyl(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         owner = message.guild.owner
-        if "The server is currently offline." in message.Embeds.content:
-            print("Server offline")
-            await message.reply(f"{owner.mention} a server is down!")
+        embeds = message.embeds
+        for embed in embeds:
+            curr = embed.to_dict()
+            if "The server is currently **offline**." in curr["description"]:
+                await message.reply(f"{owner.mention} {curr["title"]} is down!") 
     
 async def setup(bot: commands.Bot):
     await bot.add_cog(Pterodactyl(bot))
