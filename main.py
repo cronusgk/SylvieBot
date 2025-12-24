@@ -34,9 +34,6 @@ if __name__ == '__main__':
         logging.critical("DISCORD_TOKEN not found in environment.")
         exit(1)
     
-
-
-
 @bot.event
 async def on_ready():
     logging.info(f'Logged in as {bot.user.name}')
