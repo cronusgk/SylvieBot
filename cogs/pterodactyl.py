@@ -20,18 +20,20 @@ class Pterodactyl(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.api = PterodactylAPI(panel=panel, client_key=client, admin_key=admin)
-        self.checkServers.start()
     
     async def cog_load(self):
         logging.info(f'Fetching server IDs')
         await self.api.setup()
+        await self.start_loops()
         logging.info(f'Fetched {len(self.api.server_uuids)} server IDs')
+
+    async def start_loops(self):
+        self.checkServers.start()
+        self.restartDaily.start()
 
     @tasks.loop(hours=1.0)
     async def checkServers(self):
-        await self.bot.wait_until_ready()
-        await self.api.init_server_ids()
-    
+        
         servers = await self.api.get_all_servers()
         channel = self.bot.get_channel(1353220559931965472)
         if len(servers) is None:
@@ -55,6 +57,16 @@ class Pterodactyl(commands.Cog):
                 await channel.send(embed=embed)
                 await asyncio.sleep(0.5)
     
+    @tasks.loop(hours=12.0)
+    async def restartDaily(self):
+        servers = await self.api.get_all_servers()
+        for name, data in servers.items():
+            resources = data.get("resources")
+            state = resources.get("current_state", "offline")
+            if state == "running":
+                await self.api.restart_server(name)
+            else:
+                continue
     
     @app_commands.command(name="servers", description="Shows all hosted servers")
     async def allServers(self, ctx):

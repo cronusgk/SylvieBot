@@ -1,5 +1,6 @@
 import requests
 import urllib3
+import asyncio
 from pydactyl import AsyncPterodactylClient
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -68,7 +69,15 @@ class PterodactylAPI:
             return None 
             
         
-    def restart_server(self, server_id) -> None:
-        
-        self.client.servers.send_console_command(server_id, 'say Server is restarting')
+    async def restart_server(self, server_id) -> None:
+        server = self.server_uuids[server_id]
+        await self.client.client.servers.send_console_command(server, 'say Server is restarting')
+        await asyncio.sleep(10)
+        await self.client.client.servers.send_power_action(server, 'stop')
+        await asyncio.sleep(5)
+        await self.client.client.servers.send_console_command(server, 'stop')
+        await asyncio.sleep(3)
+        await self.client.client.servers.send_power_action(server, 'start') 
+
+
         
