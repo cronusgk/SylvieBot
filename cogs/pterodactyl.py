@@ -57,7 +57,7 @@ class Pterodactyl(commands.Cog):
                 await channel.send(embed=embed)
                 await asyncio.sleep(0.5)
     
-    @tasks.loop(hours=12.0)
+    @tasks.loop(time=datetime.date(hour=11, minute=00, tzinfo=datetime.timezone.utc))
     async def restartDaily(self):
         servers = await self.api.get_all_servers()
         for name, data in servers.items():
