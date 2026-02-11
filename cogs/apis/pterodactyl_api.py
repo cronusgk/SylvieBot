@@ -72,12 +72,15 @@ class PterodactylAPI:
     async def restart_server(self, server_id) -> None:
         server = self.server_uuids[server_id]
         await self.client.client.servers.send_console_command(server, 'say Server is restarting')
-        await asyncio.sleep(10)
-        await self.client.client.servers.send_power_action(server, 'stop')
-        await asyncio.sleep(5)
-        await self.client.client.servers.send_console_command(server, 'stop')
-        await asyncio.sleep(3)
-        await self.client.client.servers.send_power_action(server, 'start') 
-
+        if(server_id == "Mayview"):
+            await asyncio.sleep(10)
+            await self.client.client.servers.send_power_action(server, 'stop')
+            await asyncio.sleep(5)
+            await self.client.client.servers.send_console_command(server, 'stop')
+            await asyncio.sleep(3)
+            await self.client.client.servers.send_power_action(server, 'start') 
+        else:
+            await self.client.client.servers.send_power_action(server, 'restart') 
+        
 
         

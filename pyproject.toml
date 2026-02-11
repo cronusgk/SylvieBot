@@ -8,4 +8,5 @@ dependencies = [
     "discord>=2.3.2",
     "python-dotenv>=1.1.1",
     "requests>=2.32.4",
+    "py-dactyl>=2.1.2",
 ]
