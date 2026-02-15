@@ -9,7 +9,7 @@ DISCORD_ID = os.getenv("DISCORD_ID")
 
 class Commands(commands.Cog):
     
-    def __init__(self, bot):
+    def __init__(self, bot: commands.bot):
         self.bot = bot
     
 async def setup(bot: commands.Bot):

@@ -47,8 +47,12 @@ class PterodactylAPI:
             return None 
         
         
-    async def get_server_details(self, server_id) -> dict:
+    async def get_server_details(self, server_id: str) -> dict:
         try: 
+            if server_id not in self.server_uuids:
+                print("Server not found")
+                return None
+            
             server = self.server_uuids[server_id]
             details = await self.client.client.servers.get_server(server)
         
@@ -69,7 +73,7 @@ class PterodactylAPI:
             return None 
             
         
-    async def restart_server(self, server_id) -> None:
+    async def restart_server(self, server_id: str) -> None:
         server = self.server_uuids[server_id]
         await self.client.client.servers.send_console_command(server, 'say Server is restarting')
         if(server_id == "Mayview"):

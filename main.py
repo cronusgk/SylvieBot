@@ -47,7 +47,7 @@ async def sync(self):
 
 @bot.command()
 @commands.is_owner()
-async def reload(ctx):
+async def reload(ctx: commands.Context):
     for cog in COGS:
         await bot.reload_extension(cog)
         embed = discord.Embed(title='Reload', description=f'{cog} successfully reloaded', color=0xff00c8)
