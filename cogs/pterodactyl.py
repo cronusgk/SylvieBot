@@ -70,6 +70,7 @@ class Pterodactyl(commands.Cog):
     
     @app_commands.command(name="servers", description="Shows all hosted servers")
     async def allServers(self, ctx):
+        await ctx.response.defer()
         await ctx.response.send_message(self.checkServers())
     
     @app_commands.command(name="server", description="Shows specified server")
