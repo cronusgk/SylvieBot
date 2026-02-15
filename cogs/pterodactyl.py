@@ -70,28 +70,7 @@ class Pterodactyl(commands.Cog):
     
     @app_commands.command(name="servers", description="Shows all hosted servers")
     async def allServers(self, ctx):
-        await ctx.response.defer()
-        
-        servers = await self.api.get_all_servers()
-        
-        if len(servers) is None:
-            await ctx.send("Error retrieving server information from api.")
-            return
-        
-        embeds = []
-        for name, data in servers.items():
-            res = data.get("resources") or {}
-            state = res.get("attributes", {}).get("current_state", "busy")
-            
-            embed = discord.Embed(
-                title=f"{name}",
-                description=f"The server is currently **{state}**.",
-                colour=discord.Colour.green() if state == "running" else discord.Colour.orange()
-            )
-            embeds.append(embed)
-        
-        for i, embed in enumerate(embeds):
-            await ctx.followup.send(embed=embed)
+        await self.checkServers()
     
     @app_commands.command(name="server", description="Shows specified server")
     async def server(self, ctx, server: str):
