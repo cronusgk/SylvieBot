@@ -120,15 +120,15 @@ class Pterodactyl(commands.Cog):
         
         await ctx.followup.send(embed=embed)
         
-    @commands.Cog.listener()
-    async def on_message(self, message: discord.message):
-        owner = await self.bot.fetch_user(owner_id)
-        embeds = message.embeds
-        for embed in embeds:
-            curr = embed.to_dict()
-            if "The server is currently **offline**." in curr["description"]:
-                await asyncio.sleep(2)
-                await message.reply(f"{owner.mention} {curr["title"]} is down!") 
+    """  @commands.Cog.listener()
+        async def on_message(self, message: discord.message):
+            owner = await self.bot.fetch_user(owner_id)
+            embeds = message.embeds
+            for embed in embeds:
+                curr = embed.to_dict()
+                if "The server is currently **offline**." in curr["description"]:
+                    await asyncio.sleep(2)
+                    await message.reply(f"{owner.mention} {curr["title"]} is down!")  """
     
 async def setup(bot: commands.Bot):
     await bot.add_cog(Pterodactyl(bot))
